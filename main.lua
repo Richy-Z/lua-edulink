@@ -83,7 +83,8 @@ end
 
 
 function edulink.timetable(date, learner_id)
-    if not date then date = os.date("%Y-%m-%d", os.time()) end
+    date = date or os.time()
+    if type(date) == "number" then date = os.date("%Y-%m-%d", date) end
 
     learner_id = learner_id or edulink.learner.id
 

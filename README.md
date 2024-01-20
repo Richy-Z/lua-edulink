@@ -5,6 +5,45 @@
 
 The EduLink One API is completely proprietary and undocumented (at least publically) so this required some reverse engineering.
 
+Please note that this is **NOT** a full-fledged integration of the EduLink API. This library is incredibly limited and does not provide certain API calls such as teacher ones. **Only the student calls have been implemented.**
+
+## 📥 Installation
+Firstly, ensure that luvit is installed fully. If not, visit [the installation page](https://luvit.io/install.html).
+
+Type the following into your terminal to install the `lua-edulink` package:
+```bash
+lit install Richy-Z/lua-edulink
+```
+Now you have `lua-edulink` installed!
+
+## 🔨 Usage
+As with any other package, you have to require `lua-edulink`. Additionally, since you're interacting with an API, you will have to authenticate with valid **STUDENT** credentials.
+
+```lua
+local edulink = require("lua-edulink") -- requires the package
+
+edulink.authenticate("student@school.org", "password", "school postcode") -- logs in with the credentials
+```
+
+### Example
+This example authenticates with the API and retrieves your current timetable.
+```lua
+local edulink = require("lua-edulink") -- requires the package
+edulink.authenticate("student@school.org", "Password", "Postcode") -- authenticates with credentials
+
+local timetable = edulink.timetable() -- gets the timetable for os.time() when no arguments are supplied
+
+-- here we are just putting that previous information into a visual table that will be printed
+local tabstart = string.format("%-7s| %-30s| %-20s| %-10s|", "Period", "Subject", "Teachers", "Room")
+print(tabstart)
+print(string.rep("-", #tabstart))
+
+-- iterate through each subject of the day and add it to our visual table
+for i,v in pairs(timetable) do
+  print(string.format("%-7s| %-30s| %-20s| %-10s|", i, v.teaching_group.subject, v.teachers, v.room.name))
+end
+```
+
 ## ⚠️ Disclaimer
 This package is the result of ***reverse engineering*** efforts...
 
