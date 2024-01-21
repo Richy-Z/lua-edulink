@@ -27,6 +27,7 @@ jobs:
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
       
       - name: Read package info
+        id: pkg-meta
         run: |
           script="
             local pkg = dofile 'package.lua'
