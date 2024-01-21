@@ -29,12 +29,12 @@ jobs:
       - name: Set up SSH Keys for lit
         run: |
           ls
+          echo $HOME
           mkdir -p $HOME/.ssh
 
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
           echo "$PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
         env:
-          HOME: /github/home
           PRIVATE_KEY: ${{ secrets.ID_RSA }}
           PUBLIC_KEY: ${{ secrets.ID_RSA_PUB }}
       
@@ -44,5 +44,3 @@ jobs:
           ls $HOME
           ./lit auth ${{ github.actor }}
           ./lit publish .
-        env:
-          HOME: /github/home
