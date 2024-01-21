@@ -1,0 +1,59 @@
+name: Lit Publish
+
+on: workflow_dispatch
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check if key exists
+        env:
+          ID_RSA: ${{ secrets.ID_RSA }}
+        run: |
+          if [[ -z "$ID_RSA" ]]; then
+            echo "::error title=ID_RSA secret missing::ID_RSA is empty! Specify ID_RSA under repo/org settings -> Secrets (Actions) -> New Repo/Org Secret."
+            exit 1
+          fi
+
+      - name: Install RSA key in ~/.ssh/id_rsa
+        env:
+          lit_key: ${{ secrets.ID_RSA }}
+        run: |
+          mkdir ~/.ssh
+          echo "$lit_key" > ~/.ssh/id_rsa
+
+      - name: Build Lit
+        run: |
+          # make curl calls in script retry on 5xx http errors
+          curl -L https://github.com/luvit/lit/raw/master/get-lit.sh | sed 's/curl /curl --retry 5 --retry-max-time 30 /' | sh
+
+      - name: Read author config from package.lua
+        id: pkg-meta
+        run: |
+          script="
+            local pkg = dofile 'package.lua'
+            print('::set-output name=username::' .. pkg.name:match('^[^/]+'))
+            print('::set-output name=packageid::' .. pkg.name:match('^[^/]+/(.+)'))
+            print('::set-output name=name::' .. (pkg.author and pkg.author.name or 'Lit Publish Github Action'))
+            print('::set-output name=email::' .. (pkg.author and pkg.author.email or (pkg.name:match('^[^/]+')..'@users.noreply.github.com')))
+            print('::set-output name=version::' .. 'v'..pkg.version)
+          "
+          ./luvit -e "$script"
+
+      - name: Run Lit auth, publish to Lit
+        run: |
+          ./lit auth ${{ steps.pkg-meta.outputs.username }} "${{ steps.pkg-meta.outputs.name }}" "${{ steps.pkg-meta.outputs.email }}"
+          ./lit publish .
+
+      - name: Delete id_rsa to prevent it appearing in artifacts or anywhere else
+        run: rm -f ~/.ssh/id_rsa
+
+      - name: Print badge markdown text
+        run: |
+          echo "::notice title=Copy the following text to your README.md file to display a publish status badge.::[![Lit Publish](https://github.com/${{ github.repository }}/actions/workflows/publish-lit.yaml/badge.svg)](https://luvit.io/lit.html#author:${{ steps.pkg-meta.outputs.username }}%20${{ steps.pkg-meta.outputs.packageid }})"
+
+      - name: Done.
+        run: echo "Done."
