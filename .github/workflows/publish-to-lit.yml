@@ -1,5 +1,4 @@
 name: 🌤️ Publish package to lit
-run-name: 📤 ${{ github.actor }} is publishing the package
 
 on:
   push:
@@ -13,29 +12,37 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Install dependencies
-        run: |
-          sudo apt install -y curl
-      
+            
       - name: Set up luvi, lit, luvit
         run: |
-          curl  -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
+          # make curl retry when there are http 500 errors
+          curl  -L https://github.com/luvit/lit/raw/master/get-lit.sh | sed 's/curl /curl --retry 5 --retry-max-time 30 /' | sh
       
       - name: Set up SSH Keys for lit
+        env:
+          PRIVATE_KEY: ${{ secrets.ID_RSA }}
         run: |
           mkdir -p $HOME/.ssh
           
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
-          sudo chmod 777 $HOME/.ssh/id_rsa
-
-          echo "$PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
-          sudo chmod 777 $HOME/.ssh/id_rsa.pub
-        env:
-          PRIVATE_KEY: ${{ secrets.ID_RSA }}
-          PUBLIC_KEY: ${{ secrets.ID_RSA_PUB }}
       
-      - name: Publish package to lit
+      - name: Read package info
         run: |
-          sudo ./lit auth ${{ github.actor }} "Richy Z." "64844585+Richy-Z@users.noreply.github.com"
-          sudo ./lit publish .
+          script="
+            local pkg = dofile 'package.lua'
+            print('::set-output name=username::' .. pkg.name:match('^[^/]+'))
+            print('::set-output name=packageid::' .. pkg.name:match('^[^/]+/(.+)'))
+            print('::set-output name=name::' .. (pkg.author and pkg.author.name or 'Lit Publish Github Action'))
+            print('::set-output name=email::' .. (pkg.author and pkg.author.email or (pkg.name:match('^[^/]+')..'@users.noreply.github.com')))
+            print('::set-output name=version::' .. 'v'..pkg.version)
+          "
+          ./luvit -e "$script"
+      
+      - name: Authenticate and publish to Lit
+        run: |
+          ./lit auth ${{ steps.pkg-meta.outputs.username }} "${{ steps.pkg-meta.outputs.name }}" "${{ steps.pkg-meta.outputs.email }}"
+          ./lit publish .
+      
+      - name: Remove sensitive data
+        run: |
+          rm -f $HOME/.ssh/id_rsa
