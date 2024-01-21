@@ -17,9 +17,11 @@ return {
         "creationix/coro-http"
     },
     files = {
-        "**.lua",
+        --[["**.lua",
         "!privateTests*",
         "!tests*",
-        "!.github*"
+        "!.github*"]]
+        "main.lua",
+        "package.lua"
     }
 }

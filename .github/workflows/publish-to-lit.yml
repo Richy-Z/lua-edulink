@@ -16,22 +16,14 @@ jobs:
       
       - name: Install dependencies
         run: |
-          ls
-          sudo apt update
-          sudo apt upgrade
           sudo apt install -y curl
       
       - name: Set up luvi, lit, luvit
         run: |
-          ls
           curl  -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
       
       - name: Set up SSH Keys for lit
         run: |
-          ls
-          echo $HOME
-          mkdir -p $HOME/.ssh
-
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
           echo "$PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
         env:
@@ -40,7 +32,5 @@ jobs:
       
       - name: Publish package to lit
         run: |
-          ls
-          ls $HOME
           ./lit auth ${{ github.actor }}
           ./lit publish .
