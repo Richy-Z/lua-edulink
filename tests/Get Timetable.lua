@@ -1,7 +1,11 @@
 local edulink = require("../main.lua")
 edulink.authenticate("student@school.org", "Password", "Postcode")
 
-local timetable = edulink.timetable()
+-- Get next days subjects
+local tm = os.time() + 60*60*24 + 1000
+local timetable, err = edulink.timetable(tm)
+
+if not timetable then p(err) return end
 
 local tabstart = string.format("%-7s| %-30s| %-20s| %-10s|", "Period", "Subject", "Teachers", "Room")
 print(tabstart)
