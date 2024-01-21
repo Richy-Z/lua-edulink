@@ -20,7 +20,9 @@ return {
         --[["**.lua",
         "!privateTests*",
         "!tests*",
-        "!.github*"]]
+        "!.github*"
+        
+        ]]
         "main.lua",
         "package.lua"
     }
