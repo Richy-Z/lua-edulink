@@ -19,6 +19,7 @@ return {
     files = {
         "**.lua",
         "!privateTests*",
-        "!tests*"
+        "!tests*",
+        "!.github*"
     }
 }
