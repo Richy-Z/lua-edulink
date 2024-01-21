@@ -34,5 +34,7 @@ jobs:
       
       - name: Publish package to lit
         run: |
+          cat $HOME/.litconfig
+          
           ./lit auth ${{ github.actor }}
           ./lit publish .
