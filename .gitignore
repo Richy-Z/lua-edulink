@@ -4,3 +4,4 @@ luvit
 
 deps/
 privateTests/
+.DS_Store

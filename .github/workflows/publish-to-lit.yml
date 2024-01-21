@@ -1,0 +1,48 @@
+name: 🌤️ Publish package to lit
+run-name: 📤 ${{ github.actor }} is publishing the package
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          ls
+          sudo apt update
+          sudo apt upgrade
+          sudo apt install -y curl
+      
+      - name: Set up luvi, lit, luvit
+        run: |
+          ls
+          curl  -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
+      
+      - name: Set up SSH Keys for lit
+        run: |
+          ls
+          mkdir -p $HOME/.ssh
+
+          echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
+          echo "$PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
+        env:
+          HOME: /github/home
+          PRIVATE_KEY: ${{ secrets.ID_RSA }}
+          PUBLIC_KEY: ${{ secrets.ID_RSA_PUB }}
+      
+      - name: Publish package to lit
+        run: |
+          ls
+          ls $HOME
+          ./lit auth ${{ github.actor }}
+          ./lit publish .
+        env:
+          HOME: /github/home
