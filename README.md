@@ -1,4 +1,7 @@
 # ℹ️ Richy-Z/lua-edulink
+[![🌤️ Publish package to lit](https://github.com/Richy-Z/lua-edulink/actions/workflows/publish-to-lit.yml/badge.svg)](https://github.com/Richy-Z/lua-edulink/actions/workflows/publish-to-lit.yml)
+
+## 👋🏻 Whats this?
 `Richy-Z/lua-edulink` is a Lit package that provides seamless integration between the EduLink One API and Luvit.
 
 > Edulink One is a whole school solution designed for teachers, parents and students to effectively collaborate in a user-friendly mobile and web app.
@@ -34,6 +37,6 @@ This Lit package is to be ***used at your own risk***.
 
 I, the author, its contributors, and maintainers are not responsible for any actions, legal consequences, or issues that may arise as a result of using this package. Users are advised to review the Terms of Service and licensing agreements of EduLink One before incorporating this package into proper production projects.
 
------
+----------------------------------------------------------------------------------------------------
 
 I would also like to note that ***unauthorised access of school systems can become problematic.*** School systems are sometimes built so horribly that even you with your student credentials could probably access some teacher only API calls and break the whole system. It is recommended to just stay within your student boundaries if you want to avoid wasting your time trying to explain to your 60 year old math teacher what the internet is. Even if you're correct, school systems just work in the teachers favor and you will get a detention or isolation or any punishment regardless.

@@ -24,6 +24,8 @@ jobs:
       
       - name: Set up SSH Keys for lit
         run: |
+          mkdir -p $HOME/.ssh
+          
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
           echo "$PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
         env:
