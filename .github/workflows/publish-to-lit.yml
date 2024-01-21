@@ -34,6 +34,5 @@ jobs:
       
       - name: Publish package to lit
         run: |
-          tty
           ./lit auth ${{ github.actor }} "Richy Z." "64844585+Richy-Z@users.noreply.github.com"
           ./lit publish .
