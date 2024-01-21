@@ -27,7 +27,10 @@ jobs:
           mkdir -p $HOME/.ssh
           
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
+          sudo chmod 777 $HOME/.ssh/id_rsa
+
           echo "$PUBLIC_KEY" > $HOME/.ssh/id_rsa.pub
+          sudo chmod 777 $HOME/.ssh/id_rsa.pub
         env:
           PRIVATE_KEY: ${{ secrets.ID_RSA }}
           PUBLIC_KEY: ${{ secrets.ID_RSA_PUB }}
