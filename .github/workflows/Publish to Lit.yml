@@ -31,7 +31,8 @@ jobs:
           PRIVATE_KEY: ${{ secrets.ID_RSA }}
         run: |
           mkdir -p $HOME/.ssh
-          echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
+          printf "%s" "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
+          chmod 600 $HOME/.ssh/id_rsa
 
       - name: Where is our HOME directory?
         run: |
