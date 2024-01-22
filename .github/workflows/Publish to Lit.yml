@@ -57,7 +57,7 @@ jobs:
             os.execute("echo \"version=" .. version .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
 
-            os.execute("echo \"releasenotes=$(cat 'Release Notes.md')\" >> $GITHUB_OUTPUT")
+            os.execute("echo \"releasenotes=$(cat \"Release Notes.md\")\" >> $GITHUB_OUTPUT")
 
             local release_notes = io.lines("Release Notes.md")
             local release_title = string.gsub(release_notes(), "# ", "")
