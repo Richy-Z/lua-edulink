@@ -57,13 +57,19 @@ jobs:
             os.execute("echo \"version=" .. version .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
 
-            os.execute("echo \"releasenotes=$(cat \"Release Notes.md\")\" >> $GITHUB_OUTPUT")
+            local release_notes = io.open("Release Notes.md", "r")
+            local all_contents = release_notes:read("*a")
+            release_notes:close()
 
-            local release_notes = io.lines("Release Notes.md")
-            local release_title = string.gsub(release_notes(), "# ", "")
-            io.close()
-            os.execute("echo \"release_title=" .. release_title .. "\" >> $GITHUB_OUTPUT")
-            
+            -- Escape double quotes in the contents
+            all_contents = all_contents:gsub('"', '\\"')
+
+            -- Extract the first line and remove '#' and leading/trailing whitespace from the title
+            local first_line = all_contents:match("^[^\n]+")
+            local plain_title = first_line:gsub("^%s*#*%s*(.-)%s*$", "%1")
+
+            os.execute("echo \"releasenotes=" .. all_contents .. "\" >> $GITHUB_OUTPUT")
+            os.execute("echo \"release_title=" .. plain_title .. "\" >> $GITHUB_OUTPUT")
           '
           ./luvit -e "$script"
       
