@@ -49,6 +49,7 @@ jobs:
           local packageId = package.name:match("^[^/]+/(.+)")
           local version = "v" .. package.version
           local includes = "{".. table.concat(package.files, "\n") .. "}"
+          print(table.concat(package.files, "\n"))
           print("Processed")
           
           os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
