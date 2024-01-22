@@ -21,7 +21,6 @@ return {
         "!privateTests*",
         "!tests*",
         "!.github*"
-        
         ]]
         "main.lua",
         "package.lua"

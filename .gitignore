@@ -2,6 +2,8 @@ lit
 luvi
 luvit
 
-deps/
-privateTests/
+deps*
+privateTests*
 .DS_Store
+
+sshkeys*

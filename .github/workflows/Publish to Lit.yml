@@ -1,0 +1,56 @@
+name: Publish package to lit
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt upgrade
+          
+          sudo apt install curl
+          sudo apt install openssl
+      
+      - name: Set up luvi, lit, luvit
+        run: |
+          # make curl retry when there are HTTP 500 errors
+          curl  -L https://github.com/luvit/lit/raw/master/get-lit.sh | sed 's/curl /curl --retry 5 --retry-max-time 30 /' | sh
+      
+      - name: Set up SSH keys for lit
+        env:
+          PRIVATE_KEY: ${{ secrets.ID_RSA }}
+        run: |
+          mkdir -p $HOME/.ssh
+          echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
+      
+      - name: Read package information
+        id: package-info
+        run: |
+          script="
+            local pkg = dofile("package.lua")
+            print("username=".. pkg.name:match('^[^/]+'))
+            print("packageid=".. pkg.name:match('^[^/]+/(.+)'))
+            print("name=".. (pkg.author and pkg.author.name or "numelon.com"))
+            print("email=".. (pkg.author and pkg.author.email or (pkg.name:match('^[^/]+').."@users.noreply.github.com")))
+            print("version=".. "v"..pkg.version)
+          "
+          ./luvit -e "$script" >> $GITHUB_OUTPUT
+      
+      - name: Authenticate and publish to Lit
+        run: |
+          ./lit auth "${{ steps.package-info.outputs.username }}" "${{ steps.package-info.outputs.name }}" "${{ steps.package-info.outputs.email }}"
+          ./lit publish .
+      
+      - name: Cleanup (remove sensitive data)
+        run: |
+          rm -f $HOME/.ssh/id_rsa
