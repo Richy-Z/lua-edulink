@@ -32,6 +32,10 @@ jobs:
         run: |
           mkdir -p $HOME/.ssh
           echo "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
+
+      - name: Where is our HOME directory?
+        run: |
+          echo $HOME
       
       - name: Read package information
         id: package-info
