@@ -20,9 +20,13 @@ jobs:
 
           # sudo apt install curl
           # sudo apt install openssl
+          
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          (echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> /Users/runner/.bash_profile
+          eval "$(/usr/local/bin/brew shellenv)"
+
           brew install curl
-          brew install@3
+          brew install openssl@3
       
       - name: Set up luvi, lit, luvit
         run: |
