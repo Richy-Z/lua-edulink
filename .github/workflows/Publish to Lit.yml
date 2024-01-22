@@ -65,7 +65,7 @@ jobs:
           print("Read")
           
           -- Escape double quotes in the contents
-          all_contents = all_contents:gsub([["]], [[\\"]])
+          all_contents = all_contents:gsub([["]]--, [[\\"]])
           print("gsub")
           
           -- Extract the first line and remove '#' and leading/trailing whitespace from the title
