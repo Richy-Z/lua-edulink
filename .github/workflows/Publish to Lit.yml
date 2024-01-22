@@ -41,43 +41,56 @@ jobs:
         id: package-info
         run: |
           script='
-          local package = dofile("package.lua")
-
+          local package_path = "package.lua"
+          local release_notes_path = "Release Notes.md"
+          
+          local package = dofile(package_path)
+          
+          if not package then
+              error("Failed to load package.lua")
+          end
+          
           local username = package.name:match("^[^/]+")
           local authorName = package.author and package.author.name or "numelon.com"
           local authorEmail = package.author and package.author.email or (username .. "@users.noreply.github.com")
           local packageId = package.name:match("^[^/]+/(.+)")
           local version = "v" .. package.version
-          local includes = "{".. table.concat(package.files, "\n") .. "}"
-          print(table.concat(package.files, "\n"))
-          print("Processed")
+          local includes = table.concat(package.files, "\n")
           
-          os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
-          os.execute("echo \"name=" .. authorName .. "\" >> $GITHUB_OUTPUT")
-          os.execute("echo \"email=" .. authorEmail .. "\" >> $GITHUB_OUTPUT")
-          os.execute("echo \"packageid=" .. packageId .. "\" >> $GITHUB_OUTPUT")
-          os.execute("echo \"version=" .. version .. "\" >> $GITHUB_OUTPUT")
-          os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
-          print("Processed basic")
+          local script = [[
+          echo "username=]] .. username .. [[" >> $GITHUB_OUTPUT
+          echo "name=]] .. authorName .. [[" >> $GITHUB_OUTPUT
+          echo "email=]] .. authorEmail .. [[" >> $GITHUB_OUTPUT
+          echo "packageid=]] .. packageId .. [[" >> $GITHUB_OUTPUT
+          echo "version=]] .. version .. [[" >> $GITHUB_OUTPUT
+          echo "includes=]] .. includes .. [[" >> $GITHUB_OUTPUT
+          ]]
           
-          --[[local release_notes = io.open("Release Notes.md", "r")
+          os.execute(script)
+          
+          local release_notes = io.open(release_notes_path, "r")
+          
+          if not release_notes then
+              error("Failed to open Release Notes.md")
+          end
+          
           local all_contents = release_notes:read("*a")
           release_notes:close()
-          print("Read")
           
           -- Escape double quotes in the contents
-          all_contents = all_contents:gsub([["]]--, [[\\"]])
-          --[[print("gsub")
+          all_contents = all_contents:gsub('"', '\\"')
           
-          -- Extract the first line and remove '#' and leading/trailing whitespace from the title
           local first_line = all_contents:match("^[^\n]+")
           local plain_title = first_line:gsub("^%s*#*%s*(.-)%s*$", "%1")
-          print("extracted")
           
-          print("echoing")
-          os.execute("echo \"releasenotes=" .. all_contents .. "\" >> $GITHUB_OUTPUT")
-          os.execute("echo \"release_title=" .. plain_title .. "\" >> $GITHUB_OUTPUT")
-          print("echoed")]]
+          local script = [[
+          echo "releasenotes<<EOF
+          ]] .. all_contents .. [[
+          EOF" >> $GITHUB_OUTPUT
+          echo "release_title="]] .. plain_title .. [[" >> $GITHUB_OUTPUT
+          ]]
+          
+          os.execute(script)
           '
           ./luvit -e "$script"
       
@@ -99,10 +112,9 @@ jobs:
             ${{ github.workspace }}/release.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.package-info.outputs.version }}
-          title: ${{ steps.package-info.outputs.version }} - Test Release #${{ steps.package-info.outputs.release_title }}
+          title: ${{ steps.package-info.outputs.version }} - ${{ steps.package-info.outputs.release_title }}
           body: |
-            Test Release
-            # ${{ steps.package-info.outputs.releasenotes }}
+            ${{ steps.package-info.outputs.releasenotes }}
       
       - name: Cleanup (remove sensitive data)
         if: always()
