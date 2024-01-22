@@ -1,4 +1,5 @@
-name: Publish package to lit
+name: Publish package to Lit 📤
+run-name: "✨ Publishing to Lit, new update: ${{ github.ref }}"
 
 on:
   push:
@@ -7,8 +8,7 @@ on:
 
 jobs:
   publish:
-    runs-on: macos-latest
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,17 +16,10 @@ jobs:
       - name: Install dependencies
         run: |
           # sudo apt update
-          # sudo apt upgrade
+          # sudo apt upgrade -y
 
-          # sudo apt install curl
-          # sudo apt install openssl
-          
-          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          (echo; echo 'eval "$(/usr/local/bin/brew shellenv)"') >> /Users/runner/.bash_profile
-          eval "$(/usr/local/bin/brew shellenv)"
-
-          brew install curl
-          brew install openssl@3
+          sudo apt install curl
+          sudo apt install openssl
       
       - name: Set up luvi, lit, luvit
         run: |
@@ -44,22 +37,33 @@ jobs:
         run: |
           echo $HOME
       
-      - name: Read package information
+      - name: Read package & release information
         id: package-info
         run: |
           script='
             local package = dofile("package.lua")
+
             local username = package.name:match("^[^/]+")
             local authorName = package.author and package.author.name or "numelon.com"
             local authorEmail = package.author and package.author.email or (username .. "@users.noreply.github.com")
             local packageId = package.name:match("^[^/]+/(.+)")
             local version = "v" .. package.version
+            local includes = table.concat(package.files, "\n")
 
             os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"name=" .. authorName .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"email=" .. authorEmail .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"packageid=" .. packageId .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"version=" .. version .. "\" >> $GITHUB_OUTPUT")
+            os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
+
+            os.execute("echo \"releasenotes=$(cat 'Release Notes.md')\" >> $GITHUB_OUTPUT")
+
+            local release_notes = io.lines("Release Notes.md")
+            local release_title = string.gsub(release_notes(), "# ", "")
+            io.close()
+            os.execute("echo \"release_title=" .. release_title .. "\" >> $GITHUB_OUTPUT")
+            
           '
           ./luvit -e "$script"
       
@@ -67,7 +71,25 @@ jobs:
         run: |
           ./lit auth "${{ steps.package-info.outputs.username }}" "${{ steps.package-info.outputs.name }}" "${{ steps.package-info.outputs.email }}"
           ./lit publish .
+          echo "Package ID: ${{ steps.package-info.outputs.packageid }}"
+      
+      - name: Create zip file for GitHub Release
+        run: |
+          zip -r release.zip ${{ steps.package-info.outputs.includes }}
+        working-directory: ${{ github.workspace }}
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ github.workspace }}/release.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.package-info.outputs.version }}
+          title: ${{ steps.package-info.outputs.version }} - ${{ steps.package-info.outputs.release_title }}
+          body: |
+            ${{ steps.package-info.outputs.releasenotes }}
       
       - name: Cleanup (remove sensitive data)
+        if: always()
         run: |
           rm -f $HOME/.ssh/id_rsa

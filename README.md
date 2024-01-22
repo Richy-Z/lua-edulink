@@ -1,5 +1,5 @@
 # ℹ️ Richy-Z/lua-edulink
-[![🌤️ Publish package to lit](https://github.com/Richy-Z/lua-edulink/actions/workflows/publish-to-lit.yml/badge.svg)](https://github.com/Richy-Z/lua-edulink/actions/workflows/publish-to-lit.yml)
+[![Publish package to lit](https://github.com/Richy-Z/lua-edulink/actions/workflows/Publish%20to%20Lit.yml/badge.svg)](https://github.com/Richy-Z/lua-edulink/actions/workflows/Publish%20to%20Lit.yml)
 
 ## 👋🏻 Whats this?
 `Richy-Z/lua-edulink` is a Lit package that provides seamless integration between the EduLink One API and Luvit.
