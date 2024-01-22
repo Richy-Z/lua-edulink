@@ -48,7 +48,7 @@ jobs:
           local authorEmail = package.author and package.author.email or (username .. "@users.noreply.github.com")
           local packageId = package.name:match("^[^/]+/(.+)")
           local version = "v" .. package.version
-          local includes = table.concat(package.files, "\n")
+          local includes = "{".. table.concat(package.files, "\n") .. "}"
           print("Processed")
           
           os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
