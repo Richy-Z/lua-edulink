@@ -41,12 +41,12 @@ jobs:
         id: package-info
         run: |
           script='
-            local pkg = dofile("package.lua")
-            local username = pkg.name:match("^[^/]+")
-            local authorName = pkg.author and pkg.author.name or "numelon.com"
-            local authorEmail = pkg.author and pkg.author.email or (username .. "@users.noreply.github.com")
-            local packageId = pkg.name:match("^[^/]+/(.+)")
-            local version = "v" .. pkg.version
+            local package = dofile("package.lua")
+            local username = package.name:match("^[^/]+")
+            local authorName = package.author and package.author.name or "numelon.com"
+            local authorEmail = package.author and package.author.email or (username .. "@users.noreply.github.com")
+            local packageId = package.name:match("^[^/]+/(.+)")
+            local version = "v" .. package.version
 
             os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
             os.execute("echo \"name=" .. authorName .. "\" >> $GITHUB_OUTPUT")
