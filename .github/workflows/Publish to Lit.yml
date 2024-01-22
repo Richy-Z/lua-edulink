@@ -78,7 +78,7 @@ jobs:
           release_notes:close()
           
           -- Escape double quotes in the contents
-          all_contents = all_contents:gsub('"', '\\"')
+          all_contents = all_contents:gsub([["]], [[\\"]])
           
           local first_line = all_contents:match("^[^\n]+")
           local plain_title = first_line:gsub("^%s*#*%s*(.-)%s*$", "%1")
