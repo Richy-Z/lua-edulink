@@ -83,14 +83,8 @@ jobs:
           local first_line = all_contents:match("^[^\n]+")
           local plain_title = first_line:gsub("^%s*#*%s*(.-)%s*$", "%1")
           
-          local script = [[
-          echo "releasenotes<<EOF
-          ]] .. all_contents .. [[
-          EOF" >> $GITHUB_OUTPUT
-          echo "release_title="]] .. plain_title .. [[" >> $GITHUB_OUTPUT
-          ]]
-          
-          os.execute(script)
+          print("::set-output name=releasenotes::".. all_contents)
+          print("::set-output name=release_title::".. plain_title)
           '
           ./luvit -e "$script"
       
