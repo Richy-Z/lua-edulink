@@ -1,6 +1,6 @@
 return {
     name = "Richy-Z/lua-edulink",
-    version = "0.1.2",
+    version = "0.1.3",
     description = "EduLink One API integration for Luvit",
     tags = {"edulink", "api", "school", "education", "uk", "england", "scotland", "wales", "ireland"},
     license = "MIT",
@@ -17,11 +17,6 @@ return {
         "creationix/coro-http"
     },
     files = {
-        --[["**.lua",
-        "!privateTests*",
-        "!tests*",
-        "!.github*"
-        ]]
         "main.lua",
         "package.lua"
     }
