@@ -32,7 +32,6 @@ jobs:
         run: |
           mkdir -p $HOME/.ssh
           printf "%s" "$PRIVATE_KEY" > $HOME/.ssh/id_rsa
-          chmod 600 $HOME/.ssh/id_rsa
 
       - name: Where is our HOME directory?
         run: |
