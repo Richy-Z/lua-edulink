@@ -41,35 +41,35 @@ jobs:
         id: package-info
         run: |
           script='
-            local package = dofile("package.lua")
+          local package = dofile("package.lua")
 
-            local username = package.name:match("^[^/]+")
-            local authorName = package.author and package.author.name or "numelon.com"
-            local authorEmail = package.author and package.author.email or (username .. "@users.noreply.github.com")
-            local packageId = package.name:match("^[^/]+/(.+)")
-            local version = "v" .. package.version
-            local includes = table.concat(package.files, "\n")
-
-            os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
-            os.execute("echo \"name=" .. authorName .. "\" >> $GITHUB_OUTPUT")
-            os.execute("echo \"email=" .. authorEmail .. "\" >> $GITHUB_OUTPUT")
-            os.execute("echo \"packageid=" .. packageId .. "\" >> $GITHUB_OUTPUT")
-            os.execute("echo \"version=" .. version .. "\" >> $GITHUB_OUTPUT")
-            os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
-
-            local release_notes = io.open("Release Notes.md", "r")
-            local all_contents = release_notes:read("*a")
-            release_notes:close()
-
-            -- Escape double quotes in the contents
-            all_contents = all_contents:gsub('"', '\\"')
-
-            -- Extract the first line and remove '#' and leading/trailing whitespace from the title
-            local first_line = all_contents:match("^[^\n]+")
-            local plain_title = first_line:gsub("^%s*#*%s*(.-)%s*$", "%1")
-
-            os.execute("echo \"releasenotes=" .. all_contents .. "\" >> $GITHUB_OUTPUT")
-            os.execute("echo \"release_title=" .. plain_title .. "\" >> $GITHUB_OUTPUT")
+          local username = package.name:match("^[^/]+")
+          local authorName = package.author and package.author.name or "numelon.com"
+          local authorEmail = package.author and package.author.email or (username .. "@users.noreply.github.com")
+          local packageId = package.name:match("^[^/]+/(.+)")
+          local version = "v" .. package.version
+          local includes = table.concat(package.files, "\n")
+          
+          os.execute("echo \"username=" .. username .. "\" >> $GITHUB_OUTPUT")
+          os.execute("echo \"name=" .. authorName .. "\" >> $GITHUB_OUTPUT")
+          os.execute("echo \"email=" .. authorEmail .. "\" >> $GITHUB_OUTPUT")
+          os.execute("echo \"packageid=" .. packageId .. "\" >> $GITHUB_OUTPUT")
+          os.execute("echo \"version=" .. version .. "\" >> $GITHUB_OUTPUT")
+          os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
+          
+          local release_notes = io.open("Release Notes.md", "r")
+          local all_contents = release_notes:read("*a")
+          release_notes:close()
+          
+          -- Escape double quotes in the contents
+          all_contents = all_contents:gsub([["]], [[\\"]])
+          
+          -- Extract the first line and remove '#' and leading/trailing whitespace from the title
+          local first_line = all_contents:match("^[^\n]+")
+          local plain_title = first_line:gsub("^%s*#*%s*(.-)%s*$", "%1")
+          
+          os.execute("echo \"releasenotes=" .. all_contents .. "\" >> $GITHUB_OUTPUT")
+          os.execute("echo \"release_title=" .. plain_title .. "\" >> $GITHUB_OUTPUT")
           '
           ./luvit -e "$script"
       
