@@ -44,7 +44,7 @@ jobs:
             os.execute([[echo "packageid=]].. pkg.name:match('^[^/]+/(.+)')) ..[[" >> $GITHUB_OUTPUT]])
             os.execute([[echo "version=]].. "v"..pkg.version ..[[" >> $GITHUB_OUTPUT]])
           "
-          ./luvit -e "$script" >> $GITHUB_OUTPUT
+          ./luvit -e "$script"
       
       - name: Authenticate and publish to Lit
         run: |
