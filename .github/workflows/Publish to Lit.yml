@@ -59,7 +59,7 @@ jobs:
           os.execute("echo \"includes=" .. includes .. "\" >> $GITHUB_OUTPUT")
           print("Processed basic")
           
-          local release_notes = io.open("Release Notes.md", "r")
+          --[[local release_notes = io.open("Release Notes.md", "r")
           local all_contents = release_notes:read("*a")
           release_notes:close()
           print("Read")
@@ -76,7 +76,7 @@ jobs:
           print("echoing")
           os.execute("echo \"releasenotes=" .. all_contents .. "\" >> $GITHUB_OUTPUT")
           os.execute("echo \"release_title=" .. plain_title .. "\" >> $GITHUB_OUTPUT")
-          print("echoed")
+          print("echoed")]]
           '
           ./luvit -e "$script"
       
@@ -98,9 +98,10 @@ jobs:
             ${{ github.workspace }}/release.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ steps.package-info.outputs.version }}
-          title: ${{ steps.package-info.outputs.version }} - ${{ steps.package-info.outputs.release_title }}
+          title: ${{ steps.package-info.outputs.version }} - Test Release #${{ steps.package-info.outputs.release_title }}
           body: |
-            ${{ steps.package-info.outputs.releasenotes }}
+            Test Release
+            # ${{ steps.package-info.outputs.releasenotes }}
       
       - name: Cleanup (remove sensitive data)
         if: always()
